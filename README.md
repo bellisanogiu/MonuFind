@@ -5,6 +5,7 @@ Computer vision project to recognize monuments with the bag of world
 Photos of the monuments of the city of Cagliari (Sardinia, Italy)
 - Bonaria
 - Bastione
+- Basilica
 
 # Tool/Coding
 - OpenCV
