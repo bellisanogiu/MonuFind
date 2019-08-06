@@ -6,7 +6,11 @@ Photos of the monuments of the city of Cagliari (Sardinia, Italy)
 - Bonaria
 - Bastione
 - Basilica
--
+- Caserma carabinieri
+- Carlo Felice
+- Palazzo delle Scienze
+- Porta Cristina
+- Torre dell'Elefante
 
 # Tool/Coding
 - OpenCV
