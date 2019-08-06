@@ -12,6 +12,9 @@ Photos of the monuments of the city of Cagliari (Sardinia, Italy)
 - Porta Cristina
 - Torre dell'Elefante
 - Municipio
+- Collegiata Anna
+- Piazza Carmine
+- Cittadella dei Musei
 
 # Tool/Coding
 - OpenCV
