@@ -6,6 +6,7 @@ Photos of the monuments of the city of Cagliari (Sardinia, Italy)
 - Bonaria
 - Bastione
 - Basilica
+-
 
 # Tool/Coding
 - OpenCV
