@@ -8,7 +8,6 @@ Photos of the monuments of the city of [Cagliari (Sardinia, Italy)](https://it.w
 - Basilica e Santuario di Nostra Signora di Bonaria
 - Cattedrale di Santa Maria
 - Legione dei carabinieri
-- Carlo Felice
 - Palazzo delle Scienze
 - Porta Cristina
 - Torre dell'Elefante
@@ -16,6 +15,7 @@ Photos of the monuments of the city of [Cagliari (Sardinia, Italy)](https://it.w
 - Collegiata Anna
 - Piazza Carmine
 - Cittadella dei Musei
+- Statua Carlo Felice
 
 # Tool/Coding
 - OpenCV
