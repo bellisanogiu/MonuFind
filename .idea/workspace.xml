@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e223f004-187a-4128-a52a-dac54c5f4c2f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,7 +46,7 @@
       <workItem from="1565125887238" duration="204000" />
       <workItem from="1565126101001" duration="746000" />
       <workItem from="1565126856817" duration="604000" />
-      <workItem from="1565208016010" duration="664000" />
+      <workItem from="1565208016010" duration="820000" />
     </task>
     <task id="LOCAL-00001" summary="commit from pycharm">
       <created>1565124468608</created>
@@ -160,7 +160,14 @@
       <option name="project" value="LOCAL" />
       <updated>1565208629511</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="readme update">
+      <created>1565208692132</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1565208692132</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
