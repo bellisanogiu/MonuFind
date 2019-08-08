@@ -6,13 +6,14 @@
 % dataset: http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz
 
 % dataset Cagliari
-url_cagliari = '/home/pino/PycharmProjects/MonuFind/dataset.tar.gz';
+%url_cagliari = 'https://www.dropbox.com/s/y9hv06tc3pzln2k/dataset.tar.gz?dl=0';
+url_cagliari = 'e:\\dataset.zip';
 outputFolder = fullfile(tempdir, 'dataset'); % define output folder; tempdir is the name of temporary folder for the system
 
 % download only once
 if ~exist(outputFolder, 'dir') 
  disp('Downloading Cagliari data set...');
- untar(url_cagliari, outputFolder);
+ unzip(url_cagliari, outputFolder);
 end
 
 rootFolder = fullfile(outputFolder, 'dataset');
