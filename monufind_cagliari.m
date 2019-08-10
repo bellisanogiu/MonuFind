@@ -6,8 +6,8 @@
 % dataset: http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz
 
 % dataset Cagliari
-url_cagliari = 'e:\\dataset.zip';
-outputFolder = fullfile(tempdir, 'dataset'); % define output folder; tempdir is the name of temporary folder for the system
+url_cagliari = 'https://github.com/bellisanogiu/MonuFind/blob/master/dataset_front_low.zip';
+outputFolder = fullfile(tempdir, 'datasetlow'); % define output folder; tempdir is the name of temporary folder for the system
 
 % download only once
 if ~exist(outputFolder, 'dir') 
