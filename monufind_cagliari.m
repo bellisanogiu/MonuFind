@@ -6,7 +6,7 @@
 % dataset: http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz
 
 % dataset Cagliari
-url_cagliari = 'https://github.com/bellisanogiu/MonuFind/blob/master/dataset_front_low.zip';
+url_cagliari = 'https://github.com/bellisanogiu/MonuFind/raw/master/dataset_front_low.zip';
 outputFolder = fullfile(tempdir, 'datasetlow'); % define output folder; tempdir is the name of temporary folder for the system
 
 % download only once
@@ -15,7 +15,7 @@ if ~exist(outputFolder, 'dir')
  unzip(url_cagliari, outputFolder);
 end
 
-rootFolder = fullfile(outputFolder, 'dataset');
+rootFolder = fullfile(outputFolder, 'dataset_front_low');
 
 % create a collection of images (airplanes, ferry, laptop)
 imgSets = [imageSet(fullfile(rootFolder, 'basilicaBonaria')), ...
