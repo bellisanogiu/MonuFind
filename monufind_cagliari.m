@@ -6,7 +6,6 @@
 % dataset: http://www.vision.caltech.edu/Image_Datasets/Caltech101/101_ObjectCategories.tar.gz
 
 % dataset Cagliari
-%url_cagliari = 'https://www.dropbox.com/s/y9hv06tc3pzln2k/dataset.tar.gz?dl=0';
 url_cagliari = 'e:\\dataset.zip';
 outputFolder = fullfile(tempdir, 'dataset'); % define output folder; tempdir is the name of temporary folder for the system
 
