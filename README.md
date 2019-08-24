@@ -2,7 +2,9 @@
 Computer vision project to recognize monuments with the bag of visual word model
 
 The base code of the algorithm derive from the following lessons:
+
 ICPR 2014 Tutorial
+
 Hands on Advanced Bag-of-Words Models for Visual Recognition
 - https://sites.google.com/site/handsonbow/schedule
 - https://sites.google.com/site/handsonbow/downloads
