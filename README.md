@@ -1,5 +1,15 @@
 # MonuFind
-Computer vision project to recognize monuments with the bag of world
+Computer vision project to recognize monuments with the bag of visual word model
+
+The base code of the algorithm derive from the following lessons:
+# ICPR 2014 Tutorial
+Hands on Advanced Bag-of-Words Models for Visual Recognition
+Instructors:
+L. Ballan     <lamberto.ballan@unifi.it>
+L. Seidenari  <lorenzo.seidenari@unifi.it>
+
+https://sites.google.com/site/handsonbow/schedule
+https://sites.google.com/site/handsonbow/downloads
 
 # Dataset
 Photos of the monuments of the city of [Cagliari (Sardinia, Italy)](https://it.wikipedia.org/wiki/Monumenti_di_Cagliari)
@@ -12,14 +22,13 @@ Photos of the monuments of the city of [Cagliari (Sardinia, Italy)](https://it.w
 - Porta Cristina
 - Torre dell'Elefante
 - Municipio
-- Collegiata Anna
-- Piazza Carmine
-- Cittadella dei Musei
+- Collegiata di Sant'Anna
+- Statua dell'Immacolata di Piazza del Carmine
+- Ingresso alla Cittadella dei Musei
 - Statua Carlo Felice
 
 # Tool/Coding
-- OpenCV
-- Python
+- Matlab
 
 # Authors
 - Alberto Pes
