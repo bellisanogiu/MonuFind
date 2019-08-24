@@ -10,10 +10,10 @@ Hands on Advanced Bag-of-Words Models for Visual Recognition
 - https://sites.google.com/site/handsonbow/downloads
 
 # Instructions
-- Download or clone the repository
-- Install the libsvm library located in the directory: "MonuFind/enhancedBow/lib"
-- Navigate to the directory: ""MonuFind/enhancedBow/matlab"
-- Open and run with Matlab the MonuProject.m file
+1 Download or clone the repository
+2 Install the libsvm library located in the directory: "MonuFind/enhancedBow/lib"
+3 Navigate to the directory: ""MonuFind/enhancedBow/matlab"
+4 Open and run with Matlab the MonuProject.m file
 
 # Dataset
 Photos of the monuments of the city of [Cagliari (Sardinia, Italy)](https://it.wikipedia.org/wiki/Monumenti_di_Cagliari)
