@@ -22,7 +22,8 @@ close all;
 
 % DATASET
 % dataset_dir='4_ObjectCategories';
-dataset_dir='10_CagliariMonuments';
+dataset_dir='12_CagliariMonuments';
+% dataset_dir='10_CagliariMonuments';
 %dataset_dir = '15_ObjectCategories';
 
 % FEATURES extraction methods
@@ -73,9 +74,9 @@ nfeat_codebook = 60000; % number of descriptors used by k-means for the codebook
 norm_bof_hist = 1;
 
 % number of images selected for training (e.g. 30 for Caltech-101)
-num_train_img = 14;
+num_train_img = 30;
 % number of images selected for test (e.g. 50 for Caltech-101)
-num_test_img = 10;
+num_test_img = 20;
 % number of codewords (i.e. K for the k-means algorithm)
 nwords_codebook = 500;
 
@@ -144,7 +145,7 @@ end
 %%%%end LLC coding
 
 
-%% **** Part 3: image classification ****
+%% **** PART 3: image classification ****
 
 % Concatenate bof-histograms into training and test matrices 
 bof_train=cat(1,desc_train.bof);
