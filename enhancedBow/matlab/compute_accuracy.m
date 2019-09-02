@@ -1,4 +1,4 @@
-function compute_accuracy(data,labels_test,labels_pred,classes,method_name,desc_test,visualize_confmat,visualize_res)
+function [method_name,acc] = compute_accuracy(data,labels_test,labels_pred,classes,method_name,desc_test,visualize_confmat,visualize_res)
     for i=1:length(data)
             ind=find(labels_test==i);
             acc_class=mean(labels_pred(ind)==labels_test(ind));

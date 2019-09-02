@@ -17,6 +17,7 @@
 
 clear;
 close all;
+clc
 
 %% **** INITIALIZATION ****
 
@@ -47,18 +48,33 @@ do_feat_quantization = 1;
 
 % Classifier selection
 do_L2_NN_classification = 1;
-do_svm_linar_classification = 1;
-do_chi2_NN_classification = 1;
-do_svm_llc_linar_classification = 1;
-do_svm_precomp_linear_classification = 1;
+do_svm_linar_classification = 0;
+do_chi2_NN_classification = 1; %da fare
+do_svm_llc_linar_classification = 0; %da fare
+do_svm_precomp_linear_classification = 0;
 do_svm_inter_classification = 1;
-do_svm_chi2_classification = 1;
+do_svm_chi2_classification = 1; %da fare
+
+
+% Initialization of variables
+steps = 10; % nr.passi di cui si incrementa il codeword
+incr = 200; % incremento desiderato per il codeword
+%nwords = zeros(steps,1);
+list_method = {};
+
+L2_NN_acc = zeros(steps,1);
+svm_linar_acc = zeros(steps,1);
+chi2_NN_acc = zeros(steps,1);
+svm_llc_linar_acc = zeros(steps,1);
+svm_precomp_linea_acc = zeros(steps,1);
+svm_inter_acc = zeros(steps,1);
+svm_chi2_acc = zeros(steps,1);
 
 % Visualization options
 visualize_feat = 0;
 visualize_words = 0;
 visualize_confmat = 0;
-visualize_res = 0;
+visualize_res = 0; % visualize figure con miss image
 have_screen = isempty(getenv('DISPLAY'));
 
 % PATHS
@@ -78,160 +94,230 @@ num_train_img = 30;
 % number of images selected for test (e.g. 50 for Caltech-101)
 num_test_img = 20;
 % number of codewords (i.e. K for the k-means algorithm)
-nwords_codebook = 500;
+nwords_codebook = 1500;
 
-% image file extension
-file_ext='jpg';
+ for i = 1:steps % calculate steps
+    % image file extension
+    file_ext='jpg';
 
-% Create a new dataset split
-file_split = 'split.mat';
-if do_split_sets    
-    data = create_dataset_split_structure(fullfile(basepath, 'img', dataset_dir), num_train_img, num_test_img, file_ext);
-    save(fullfile(basepath,'img',dataset_dir,file_split),'data');
-else
-    load(fullfile(basepath,'img',dataset_dir,file_split));
-end
-classes = {data.classname}; % create cell array of class name strings
-
-% Extract SIFT features fon training and test images
-if do_feat_extraction   
-    extract_sift_features(fullfile('..','img',dataset_dir),desc_name);
-end
-
-%% **** PART 1: quantize pre-computed image features ****
-
-[desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name, dataset_dir, basepath);
-
-if (visualize_feat && have_screen)
-    feature_visualizer(desc_train);
-end
-
-% Build visual vocabulary using k-means
-if do_form_codebook
-    [VC] = visual_vocab_builder(data, desc_train, num_train_img, nfeat_codebook, nwords_codebook, max_km_iters);
-end
-
-% Quantization: assign each feature to the most representative visual word
-if do_feat_quantization
-    [desc_train, desc_test] = feature_quantization_executor(desc_train, desc_test, VC);
-end
-
-%  Visualize visual words (i.e. clusters)
-if (visualize_words && have_screen)
-    num_words = 10;
-    visual_word_visualizer(num_words, desc_train);
-end
-
-
-%% **** PART 2: represent images with BOF histograms ****
-
-% Bag-of-Features image classification 
-[desc_train, desc_test] = compute_norm_histogram(VC, desc_train, desc_test, nwords_codebook, norm_bof_hist);
-
-
-%%%%LLC Coding
-if do_svm_llc_linar_classification
-    for i=1:length(desc_train)
-        disp(desc_train(i).imgfname);
-        desc_train(i).llc = max(LLC_coding_appr(VC,desc_train(i).sift)); %max-pooling
-        desc_train(i).llc=desc_train(i).llc/norm(desc_train(i).llc); %L2 normalization
+    % Create a new dataset split
+    file_split = 'split.mat';
+    if do_split_sets    
+        data = create_dataset_split_structure(fullfile(basepath, 'img', dataset_dir), num_train_img, num_test_img, file_ext);
+        save(fullfile(basepath,'img',dataset_dir,file_split),'data');
+    else
+        load(fullfile(basepath,'img',dataset_dir,file_split));
     end
-    for i=1:length(desc_test) 
-        disp(desc_test(i).imgfname);
-        desc_test(i).llc = max(LLC_coding_appr(VC,desc_test(i).sift));
-        desc_test(i).llc=desc_test(i).llc/norm(desc_test(i).llc);
+    classes = {data.classname}; % create cell array of class name strings
+
+    % Extract SIFT features fon training and test images
+    if do_feat_extraction   
+        extract_sift_features(fullfile('..','img',dataset_dir),desc_name);
     end
-end
-%%%%end LLC coding
+
+    %% **** PART 1: quantize pre-computed image features ****
+
+    [desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name, dataset_dir, basepath);
+
+    if (visualize_feat && have_screen)
+        feature_visualizer(desc_train);
+    end
+
+    % Build visual vocabulary using k-means
+    if do_form_codebook
+        [VC] = visual_vocab_builder(data, desc_train, num_train_img, nfeat_codebook, nwords_codebook, max_km_iters);
+    end
+
+    % Quantization: assign each feature to the most representative visual word
+    if do_feat_quantization
+        [desc_train, desc_test] = feature_quantization_executor(desc_train, desc_test, VC);
+    end
+
+    %  Visualize visual words (i.e. clusters)
+    if (visualize_words && have_screen)
+        num_words = 10;
+        visual_word_visualizer(num_words, desc_train);
+    end
 
 
-%% **** PART 3: image classification ****
+    %% **** PART 2: represent images with BOF histograms ****
 
-% Concatenate bof-histograms into training and test matrices 
-bof_train=cat(1,desc_train.bof);
-bof_test=cat(1,desc_test.bof);
-if do_svm_llc_linar_classification
-    llc_train = cat(1,desc_train.llc);
-    llc_test = cat(1,desc_test.llc);
-end
+    % Bag-of-Features image classification 
+    [desc_train, desc_test] = compute_norm_histogram(VC, desc_train, desc_test, nwords_codebook, norm_bof_hist);
 
-% Construct label Concatenate bof-histograms into training and test matrices 
-labels_train=cat(1,desc_train.class);
-labels_test=cat(1,desc_test.class);
+    %%%%LLC Coding
+    if do_svm_llc_linar_classification
+        for i=1:length(desc_train)
+            disp(desc_train(i).imgfname);
+            desc_train(i).llc = max(LLC_coding_appr(VC,desc_train(i).sift)); %max-pooling
+            desc_train(i).llc=desc_train(i).llc/norm(desc_train(i).llc); %L2 normalization
+        end
+        for i=1:length(desc_test) 
+            disp(desc_test(i).imgfname);
+            desc_test(i).llc = max(LLC_coding_appr(VC,desc_test(i).sift));
+            desc_test(i).llc=desc_test(i).llc/norm(desc_test(i).llc);
+        end
+    end
+    %%%%end LLC coding
 
 
-% L2 NN classification
-if do_L2_NN_classification
-    [bof_l2lab] = L2_NN_classification(bof_test, bof_train, labels_test, labels_train);
+    %% **** PART 3: image classification ****
     
-    method_name='NN L2';
-    % Compute classification accuracy
-    compute_accuracy(data,labels_test,bof_l2lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
-end
+    % Concatenate bof-histograms into training and test matrices 
+    bof_train=cat(1,desc_train.bof);
+    bof_test=cat(1,desc_test.bof);
+    if do_svm_llc_linar_classification
+        llc_train = cat(1,desc_train.llc);
+        llc_test = cat(1,desc_test.llc);
+    end
 
-% LINEAR SVM
-if do_svm_linar_classification
-    [svm_lab] = SVM_linear_classification(bof_test, bof_train, labels_test, labels_train);
+    % Construct label Concatenate bof-histograms into training and test matrices 
+    labels_train=cat(1,desc_train.class);
+    labels_test=cat(1,desc_test.class);
+
+    % L2 NN classification
+    if do_L2_NN_classification
+        [bof_l2lab] = L2_NN_classification(bof_test, bof_train, labels_test, labels_train);
+
+        method_name='NN L2';
+        % Compute classification accuracy
+        [method_name, acc] = compute_accuracy(data,labels_test,bof_l2lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+                      
+        L2_NN_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
+
+    % LINEAR SVM
+    if do_svm_linar_classification
+        [svm_lab] = SVM_linear_classification(bof_test, bof_train, labels_test, labels_train);
+
+        method_name='SVM linear';
+        % Compute classification accuracy
+        [method_name, acc] = compute_accuracy(data,labels_test,svm_lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+                      
+        SVM_linar_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
+
+    % CHI2 NN classification
+    if do_chi2_NN_classification
+        [bof_chi2lab] = CHI2_NN_classification(bof_test, bof_train, labels_test, labels_train);
+
+        method_name='NN Chi-2';
+        % Compute classification accuracy
+        [method_name, acc] = compute_accuracy(data,labels_test,bof_chi2lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+                      
+        chi2_NN_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
+
+    % LLC LINEAR SVM
+    if do_svm_llc_linar_classification
+        [svm_llc_lab] = SVM_LLC_linar_classification(labels_test, llc_test, labels_train, llc_train);
+
+        method_name='llc+max-pooling';
+        [method_name, acc] = compute_accuracy(data,labels_test,svm_llc_lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+                      
+        svm_llc_linar_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
+
+    % SVM image classification with pre-computed LINEAR KERNELS    
+    if do_svm_precomp_linear_classification
+        [precomp_svm_lab] = SVM_PC_linear_classification(bof_train, bof_test, labels_test, labels_train);
+        method_name='SVM precomp linear';
+        % Compute classification accuracy
+        [method_name, acc] = compute_accuracy(data,labels_test,precomp_svm_lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+        % result is the same??? must be!
+        
+        svm_precomp_linea_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
+
+    % Non-linear SVM with the histogram intersection kernel
+    if do_svm_inter_classification
+        [precomp_ik_svm_lab,conf] = SVM_inter_classification(bof_train, bof_test, labels_train, labels_test);
+        method_name='SVM IK';
+        % Compute classification accuracy
+        [method_name, acc] = compute_accuracy(data,labels_test,precomp_ik_svm_lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+                      
+        svm_inter_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
+
+    % CHI-2 KERNEL (pre-compute kernel)
+    if do_svm_chi2_classification    
+        [precomp_chi2_svm_lab,conf] = SVM_CHI2_classification(bof_train, bof_test, labels_train, labels_test);
+        method_name='SVM Chi2';
+        % Compute classification accuracy
+        [method_name,acc] = compute_accuracy(data,labels_test,precomp_chi2_svm_lab,classes,method_name,desc_test,...
+                          visualize_confmat & have_screen,... 
+                          visualize_res & have_screen);
+        svm_chi2_acc(i) = acc;
+%         if ~any(strcmp(list_method, method_name))
+%             list_method{end+1} = method_name;
+%         end
+    end
     
-    method_name='SVM linear';
-    % Compute classification accuracy
-    compute_accuracy(data,labels_test,svm_lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
+    nwords(i) = nwords_codebook;
+    nwords_codebook = nwords_codebook + incr; %incremento del nr.parole
+ end
+
+ % Plot bar
+%c = categorical(list_method);
+for i = 1:steps
+    iterData = [chi2_NN_acc(i), svm_inter_acc(i), svm_chi2_acc(i)];
+    c = categorical({'chi2 NN' 'svm_inter' 'svm chi2'});
+    ax1 = subplot(1,steps,i);
+    bar(ax1,c,iterData)
+    ylim([0 1])
+    titleIterBar = sprintf('Accuracy, DIM = %d', nwords(i));
+    title(titleIterBar)
 end
 
-% CHI2 NN classification
-if do_chi2_NN_classification
-    [bof_chi2lab] = CHI2_NN_classification(bof_test, bof_train, labels_test, labels_train);
-    
-    method_name='NN Chi-2';
-    % Compute classification accuracy
-    compute_accuracy(data,labels_test,bof_chi2lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
+% Create structure
+for i = 1:steps
+    E(i).type = 'chi2_NN';
+    E(i).acc = chi2_NN_acc(i);
+    E(i).vwords = nwords(i);
+    R(i).type = 'svm_inter';
+    R(i).acc = svm_inter_acc(i);
+    R(i).vwords = nwords(i);
+    W(i).type = 'svm chi2';
+    W(i).acc = svm_chi2_acc(i);
+    W(i).vwords = nwords(i);
 end
 
-% LLC LINEAR SVM
-if do_svm_llc_linar_classification
-    [svm_llc_lab] = SVM_LLC_linar_classification(labels_test, llc_test, labels_train, llc_train);
-    
-    method_name='llc+max-pooling';
-    compute_accuracy(data,labels_test,svm_llc_lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
-end
+% Create cumulative table from structure
+T1 = struct2table(E);
+T2 = struct2table(R);
+T3 = struct2table(W);
+tableTotal = table;
+tableTotal = [T1; T2; T3];
 
-% SVM image classification with pre-computed LINEAR KERNELS    
-if do_svm_precomp_linear_classification
-    [precomp_svm_lab] = SVM_PC_linear_classification(bof_train, bof_test, labels_test, labels_train);
-    method_name='SVM precomp linear';
-    % Compute classification accuracy
-    compute_accuracy(data,labels_test,precomp_svm_lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
-    % result is the same??? must be!
-end
-
-% Non-linear SVM with the histogram intersection kernel
-if do_svm_inter_classification
-    [precomp_ik_svm_lab,conf] = SVM_inter_classification(bof_train, bof_test, labels_train, labels_test);
-    method_name='SVM IK';
-    % Compute classification accuracy
-    compute_accuracy(data,labels_test,precomp_ik_svm_lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
-end
-
-% CHI-2 KERNEL (pre-compute kernel)
-if do_svm_chi2_classification    
-    [precomp_chi2_svm_lab,conf] = SVM_CHI2_classification(bof_train, bof_test, labels_train, labels_test);
-    method_name='SVM Chi2';
-    % Compute classification accuracy
-    compute_accuracy(data,labels_test,precomp_chi2_svm_lab,classes,method_name,desc_test,...
-                      visualize_confmat & have_screen,... 
-                      visualize_res & have_screen);
-end
-
-
+% Sort table (Acc)
+tableTotal_sort = sortrows(tableTotal,acc);
