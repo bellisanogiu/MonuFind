@@ -95,7 +95,6 @@ num_train_img = 30;
 % number of images selected for test (e.g. 50 for Caltech-101)
 num_test_img = 20;
 
-
 % image file extension
 file_ext='jpg';
 
