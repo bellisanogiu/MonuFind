@@ -63,9 +63,10 @@ do_svm_chi2_classification = 1;
 % do_svm_inter_classification = 1;
 % do_svm_chi2_classification = 1; %da fare
 
+
 % Initialization of variables
-steps = 3; % nr.passi di cui si incrementa il codeword
-incr = 250; % incremento desiderato per il codeword
+steps = 10; % nr.passi di cui si incrementa il codeword
+incr = 200; % incremento desiderato per il codeword
 %nwords = zeros(steps,1);
 list_method = {};
 
@@ -81,7 +82,7 @@ svm_chi2_acc = zeros(steps,1);
 visualize_feat = 0;
 visualize_words = 0;
 visualize_confmat = 0;
-visualize_res = 0;
+visualize_res = 0; % visualize figure con miss image
 have_screen = isempty(getenv('DISPLAY'));
 
 % PATHS
@@ -101,7 +102,7 @@ num_train_img = 30;
 % number of images selected for test (e.g. 50 for Caltech-101)
 num_test_img = 20;
 % number of codewords (i.e. K for the k-means algorithm)
-nwords_codebook = 250;
+nwords_codebook = 1500;
 
 % image file extension
 file_ext='jpg';
@@ -119,18 +120,36 @@ classes = {data.classname}; % create cell array of class name strings
 % Extract SIFT features fon training and test images
 if do_feat_extraction   
     extract_sift_features(fullfile('..','img',dataset_dir),desc_name);
-end   
-
-%% **** PART 1: quantize pre-computed image features ****
-
-[desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name, dataset_dir, basepath);
-
-if (visualize_feat && have_screen)
-    feature_visualizer(desc_train);
 end
-    
-for iter = 1:steps % calculate steps
-    
+
+ for i = 1:steps % calculate steps
+     
+    % image file extension
+    file_ext='jpg';
+
+    % Create a new dataset split
+    file_split = 'split.mat';
+    if do_split_sets    
+        data = create_dataset_split_structure(fullfile(basepath, 'img', dataset_dir), num_train_img, num_test_img, file_ext);
+        save(fullfile(basepath,'img',dataset_dir,file_split),'data');
+    else
+        load(fullfile(basepath,'img',dataset_dir,file_split));
+    end
+    classes = {data.classname}; % create cell array of class name strings
+
+    % Extract SIFT features fon training and test images
+    if do_feat_extraction   
+        extract_sift_features(fullfile('..','img',dataset_dir),desc_name);
+    end
+
+    %% **** PART 1: quantize pre-computed image features ****
+
+    [desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name, dataset_dir, basepath);
+
+    if (visualize_feat && have_screen)
+        feature_visualizer(desc_train);
+    end
+
     % Build visual vocabulary using k-means
     if do_form_codebook
         [VC] = visual_vocab_builder(data, desc_train, num_train_img, nfeat_codebook, nwords_codebook, max_km_iters);
@@ -193,7 +212,7 @@ for iter = 1:steps % calculate steps
                           visualize_confmat & have_screen,... 
                           visualize_res & have_screen);
                       
-        L2_NN_acc(iter) = acc;
+        L2_NN_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
@@ -209,7 +228,7 @@ for iter = 1:steps % calculate steps
                           visualize_confmat & have_screen,... 
                           visualize_res & have_screen);
                       
-        SVM_linar_acc(iter) = acc;
+        SVM_linar_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
@@ -225,7 +244,7 @@ for iter = 1:steps % calculate steps
                           visualize_confmat & have_screen,... 
                           visualize_res & have_screen);
                       
-        chi2_NN_acc(iter) = acc;
+        chi2_NN_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
@@ -240,7 +259,7 @@ for iter = 1:steps % calculate steps
                           visualize_confmat & have_screen,... 
                           visualize_res & have_screen);
                       
-        svm_llc_linar_acc(iter) = acc;
+        svm_llc_linar_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
@@ -256,7 +275,7 @@ for iter = 1:steps % calculate steps
                           visualize_res & have_screen);
         % result is the same??? must be!
         
-        svm_precomp_linea_acc(iter) = acc;
+        svm_precomp_linea_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
@@ -271,7 +290,7 @@ for iter = 1:steps % calculate steps
                           visualize_confmat & have_screen,... 
                           visualize_res & have_screen);
                       
-        svm_inter_acc(iter) = acc;
+        svm_inter_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
@@ -285,13 +304,13 @@ for iter = 1:steps % calculate steps
         [method_name,acc] = compute_accuracy(data,labels_test,precomp_chi2_svm_lab,classes,method_name,desc_test,...
                           visualize_confmat & have_screen,... 
                           visualize_res & have_screen);
-        svm_chi2_acc(iter) = acc;
+        svm_chi2_acc(i) = acc;
 %         if ~any(strcmp(list_method, method_name))
 %             list_method{end+1} = method_name;
 %         end
     end
     
-    nwords(iter) = nwords_codebook;
+    nwords(i) = nwords_codebook;
     nwords_codebook = nwords_codebook + incr; %incremento del nr.parole
  end
 
@@ -327,4 +346,4 @@ T3 = struct2table(W);
 tableTotal = [T1; T2; T3];
 
 % Sort table (Acc)
-% tableTotal_sort = sortrows(tableTotal,acc);
+tableTotal_sort = sortrows(tableTotal,acc);
