@@ -39,19 +39,19 @@ desc_name = 'dsift';
 
 % FLAGS
 % Initial settings
-do_feat_extraction = 1;
-do_split_sets = 1;
+do_feat_extraction = 0;
+do_split_sets = 0;
 
 do_form_codebook = 1;
 do_feat_quantization = 1;
 
 % Classifier selection
-do_L2_NN_classification = 1;
-do_svm_linar_classification = 1;
+do_L2_NN_classification = 0;
+do_svm_linar_classification = 0;
 do_chi2_NN_classification = 1;
 do_svm_llc_linar_classification = 1;
-do_svm_precomp_linear_classification = 1;
-do_svm_inter_classification = 1;
+do_svm_precomp_linear_classification = 0;
+do_svm_inter_classification = 0;
 do_svm_chi2_classification = 1;
 
 % Visualization options
@@ -78,7 +78,7 @@ num_train_img = 30;
 % number of images selected for test (e.g. 50 for Caltech-101)
 num_test_img = 20;
 % number of codewords (i.e. K for the k-means algorithm)
-nwords_codebook = 500;
+nwords_codebook = 1500;
 
 % image file extension
 file_ext='jpg';
