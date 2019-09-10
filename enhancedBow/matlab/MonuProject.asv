@@ -303,8 +303,7 @@ for s_iter = 1:sift_mods
     T.NNCHI2 = chi2_NN_acc;
     T.SVMCHI2 = svm_chi2_acc;
     timeTable = struct2table(T);
-    fg = figure(s_iter+2);
-    set (fg, 'Name', sprintf('Method: %s', desc_name(s_iter)));
+    figure(s_iter+2);
     
     % Get the table in string form
 TString = evalc('disp(timeTable)');
@@ -312,7 +311,7 @@ TString = evalc('disp(timeTable)');
 TString = strrep(TString,'<strong>','\bf');
 TString = strrep(TString,'</strong>','\rm');
 TString = strrep(TString,'_','\_');
-
+TString = strrep(TString, 
 % Get a fixed-width font
 FixedWidth = get(0,'FixedWidthFontName');
 % Output the table using the annotation command.
