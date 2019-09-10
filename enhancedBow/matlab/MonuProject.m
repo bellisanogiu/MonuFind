@@ -27,7 +27,7 @@ dataset_dir='12_CagliariMonuments';
 % dataset_dir='10_CagliariMonuments';
 %dataset_dir = '15_ObjectCategories';
 
-% FEATURES extraction methods
+% FEATURES extraction methods 
 
 % 'sift' for sparse features detection 
 % (SIFT descriptors computed at Harris-Laplace keypoints)
@@ -51,14 +51,14 @@ do_feat_quantization = 1;
 % Classifier selection
 do_L2_NN_classification = 0;
 do_svm_linar_classification = 0;
-do_chi2_NN_classification = 1;
+do_chi2_NN_classification = 0;
 do_svm_llc_linar_classification = 0;
 do_svm_precomp_linear_classification = 0;
 do_svm_inter_classification = 0;
 do_svm_chi2_classification = 1;
 
 % Initialization of variables
-steps = 3; % nr.passi di cui si incrementa il codeword
+steps = 4; % nr.passi di cui si incrementa il codeword
 incr = 250; % incremento desiderato per il codeword
 %nwords = zeros(steps,1);
 list_method = {};
@@ -72,10 +72,10 @@ svm_inter_acc = zeros(steps,1);
 svm_chi2_acc = zeros(steps,1);
 
 % Visualization options
-visualize_feat = 0;
-visualize_words = 0;
-visualize_confmat = 0;
-visualize_res = 0;
+visualize_feat = 0; % error!
+visualize_words = 0; % error!
+visualize_confmat = 0; % confusion matrix
+visualize_res = 0; % error!
 have_screen = isempty(getenv('DISPLAY'));
 
 % PATHS
@@ -276,12 +276,13 @@ for s_iter = 1:sift_mods
                               visualize_res & have_screen);
             svm_chi2_acc(iter) = acc;
         end
+        
         nwords(iter) = nwords_codebook;
         nwords_codebook = nwords_codebook + incr; %incremento del nr.parole
      end
 
     % Plot bar
-    figure(s_iter);
+    figure(s_iter+50);
     for i = 1:steps
         iterData = [chi2_NN_acc(i), svm_chi2_acc(i)];
         ax1 = subplot(1,steps,i);
@@ -298,12 +299,11 @@ for s_iter = 1:sift_mods
 %     subplot(2,1,1);
 %     ax1Pos = get(ax1, 'Position');
     
-    %T.s_iter = desc_name(s_iter);
     T.Iterazioni = nwords';
     T.NNCHI2 = chi2_NN_acc;
     T.SVMCHI2 = svm_chi2_acc;
     timeTable = struct2table(T);
-    fg = figure(s_iter+2);
+    fg = figure(s_iter+20);
     set (fg, 'Name', sprintf('Method: %s', desc_name(s_iter)));
     
     % Get the table in string form
