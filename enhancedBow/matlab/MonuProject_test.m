@@ -43,9 +43,8 @@ desc_name = ["sift", "dsift"];
 % FLAGS
 % Initial settings
 do_feat_extraction = 0;
-do_split_sets = 0; % split training= 30 / test = 20
+do_split_sets = 1; % split training= 30 / test = 20
 do_split_sets_kfold = 1; % split Kfold (k = 5)
-
 
 do_form_codebook = 0;
 do_feat_quantization = 1;
@@ -124,15 +123,15 @@ end
 % end
 
 if do_split_sets_kfold
-    data = create_dataset_split_kfold((fullfile(basepath, 'img', dataset_dir)), 3, file_ext);
-    data2 = data';
-    data3 = data2(1,:); 
-    save(fullfile(basepath,'img',dataset_dir,file_split),'data3');
-    data = data3;
+    data2 = create_dataset_split_kfold_1d((fullfile(basepath, 'img', dataset_dir)), 3, file_ext);
+%     data2 = data';
+%     data3 = data2(1,:); 
+%     save(fullfile(basepath,'img',dataset_dir,file_split),'data3');
+save(fullfile(basepath,'img',dataset_dir,file_split),'data');
+%     data = data3;
 else
     load(fullfile(basepath,'img',dataset_dir,file_split));
 end
-
 
 classes = {data.classname}; % create cell array of class name strings
 
