@@ -44,6 +44,8 @@ desc_name = ["sift", "dsift"];
 % Initial settings
 do_feat_extraction = 0;
 do_split_sets = 0; % split training= 30 / test = 20
+do_split_sets_kfold = 1; % split Kfold (k = 5)
+
 
 do_form_codebook = 0;
 do_feat_quantization = 1;
@@ -100,13 +102,37 @@ file_ext='jpg';
 
 % Create a new dataset split
 file_split = 'split.mat';
+file_splitk = 'splitk.mat';
 
 if do_split_sets    
     data = create_dataset_split_structure(fullfile(basepath, 'img', dataset_dir), num_train_img, num_test_img, file_ext);
     save(fullfile(basepath,'img',dataset_dir,file_split),'data');
 else
+    %load(fullfile(basepath,'img',dataset_dir,file_split));
+end
+
+%%%%% Kfold split TEST
+% for ki = 1:5
+%     file_split = 'ksplit';
+%     s = strcat(file_split,num2str(ki))
+%     if do_split_sets_kfold    
+%         %data = create_dataset_split_structure(fullfile(basepath, 'img', dataset_dir), num_train_img, num_test_img, file_ext);
+%         save(fullfile(basepath,'img',dataset_dir,s),'data');
+%     else
+%         load(fullfile(basepath,'img',dataset_dir,file_split));
+%     end
+% end
+
+if do_split_sets_kfold
+    data = create_dataset_split_kfold((fullfile(basepath, 'img', dataset_dir)), 3, file_ext);
+    data2 = data';
+    data3 = data2(1,:); 
+    save(fullfile(basepath,'img',dataset_dir,file_split),'data3');
+    data = data3;
+else
     load(fullfile(basepath,'img',dataset_dir,file_split));
 end
+
 
 classes = {data.classname}; % create cell array of class name strings
 
