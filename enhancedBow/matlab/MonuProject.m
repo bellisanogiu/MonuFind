@@ -43,7 +43,7 @@ desc_name = ["sift", "dsift"];
 % FLAGS
 % Initial settings
 do_feat_extraction = 0;
-do_split_sets = 0;
+do_split_sets = 1;
 
 do_form_codebook = 0;
 do_feat_quantization = 1;
@@ -58,8 +58,8 @@ do_svm_inter_classification = 0;
 do_svm_chi2_classification = 1;
 
 % Initialization of variables
-steps = 1; % nr.passi di cui si incrementa il codeword
-incr = 250; % incremento desiderato per il codeword
+steps = 2; % nr.passi di cui si incrementa il codeword
+incr = 100; % incremento desiderato per il codeword
 %nwords = zeros(steps,1);
 list_method = {};
 
@@ -91,9 +91,9 @@ nfeat_codebook = 60000; % number of descriptors used by k-means for the codebook
 norm_bof_hist = 1;
 
 % number of images selected for training (e.g. 30 for Caltech-101)
-num_train_img = 30;
+num_train_img = 49;
 % number of images selected for test (e.g. 50 for Caltech-101)
-num_test_img = 20;
+num_test_img = 1;
 
 
 % image file extension
@@ -113,7 +113,7 @@ sift_mods = size(desc_name,2);
 for s_iter = 1:sift_mods
     
     % number of codewords (i.e. K for the k-means algorithm)
-    nwords_codebook = 250;
+    nwords_codebook = 600;
     % Extract SIFT features fon training and test images
     if do_feat_extraction
         extract_sift_features(fullfile('..','img',dataset_dir),desc_name(s_iter));
@@ -140,7 +140,7 @@ for s_iter = 1:sift_mods
             else
                 [VC] = visual_vocab_builder(data, desc_train, num_train_img, nfeat_codebook, nwords_codebook, max_km_iters);            
                 save(fileName,'VC');
-            end      
+            end
         end
         
 
@@ -296,7 +296,7 @@ for s_iter = 1:sift_mods
         title(titleIterBar)
     end
     
-%     subplot(2,1,1);
+% subplot(2,steps,i+1);
 %     ax1Pos = get(ax1, 'Position');
 
     T.Iterazioni = nwords';
@@ -315,7 +315,7 @@ TString = strrep(TString,'_','\_');
 FixedWidth = get(0,'FixedWidthFontName');
 % Output the table using the annotation command.
 annotation(gcf,'Textbox','String',TString,'Interpreter','Tex',...
-    'FontName',FixedWidth,'Units','Normalized','Position',[0 0 1 1]);
+    'FontName',FixedWidth,'Units','Normalized','Position',[0 1 1 0]);
     
 %     uitable('Data',timeTable{:,:},'ColumnName',timeTable.Properties.VariableNames, 'RowName',timeTable.Properties.RowNames,'Units', 'Normalized', 'Position', [0, 0, 1, 1]);  % NEW
 %     set(ax1, 'Visible', 'Off')
