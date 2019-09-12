@@ -320,7 +320,12 @@ TString = strrep(TString,'_','\_');
 FixedWidth = get(0,'FixedWidthFontName');
 % Output the table using the annotation command.
 annotation(gcf,'Textbox','String',TString,'Interpreter','Tex',...
+<<<<<<< HEAD
+    'FontName',FixedWidth,'Units','Normalized','Position',[0 1 1 0]);
+=======
     'FontName',FixedWidth,'Units','Normalized','Position',[0 0 1 1]);
+
+>>>>>>> 3fff5d109faf9eb90d917374393db4ba6dd70865
     
 %     uitable('Data',timeTable{:,:},'ColumnName',timeTable.Properties.VariableNames, 'RowName',timeTable.Properties.RowNames,'Units', 'Normalized', 'Position', [0, 0, 1, 1]);  % NEW
 %     set(ax1, 'Visible', 'Off')

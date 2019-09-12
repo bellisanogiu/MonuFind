@@ -23,11 +23,11 @@ clc
 
 % DATASET
 % dataset_dir='4_ObjectCategories';
- dataset_dir='12_CagliariMonuments';
-% dataset_dir='13_CagliariMonuments';
+dataset_dir='12_CagliariMonuments';
+% dataset_dir='10_CagliariMonuments';
 %dataset_dir = '15_ObjectCategories';
 
-% FEATURES extraction methods 
+% FEATURES extraction methods
 
 % 'sift' for sparse features detection 
 % (SIFT descriptors computed at Harris-Laplace keypoints)
@@ -43,7 +43,7 @@ desc_name = ["sift", "dsift"];
 % FLAGS
 % Initial settings
 do_feat_extraction = 0;
-do_split_sets = 1;
+do_split_sets = 0;
 
 do_form_codebook = 0;
 do_feat_quantization = 1;
@@ -51,15 +51,15 @@ do_feat_quantization = 1;
 % Classifier selection
 do_L2_NN_classification = 0;
 do_svm_linar_classification = 0;
-do_chi2_NN_classification = 0;
+do_chi2_NN_classification = 1;
 do_svm_llc_linar_classification = 0;
 do_svm_precomp_linear_classification = 0;
 do_svm_inter_classification = 0;
 do_svm_chi2_classification = 1;
 
 % Initialization of variables
-steps = 2; % nr.passi di cui si incrementa il codeword
-incr = 100; % incremento desiderato per il codeword
+steps = 1; % nr.passi di cui si incrementa il codeword
+incr = 250; % incremento desiderato per il codeword
 %nwords = zeros(steps,1);
 list_method = {};
 
@@ -72,16 +72,16 @@ svm_inter_acc = zeros(steps,1);
 svm_chi2_acc = zeros(steps,1);
 
 % Visualization options
-visualize_feat = 0; % error!
-visualize_words = 0; % error!
-visualize_confmat = 0; % confusion matrix
-visualize_res = 0; % error!
+visualize_feat = 0;
+visualize_words = 0;
+visualize_confmat = 0;
+visualize_res = 0;
 have_screen = isempty(getenv('DISPLAY'));
 
 % PATHS
 basepath = '..';
 wdir = pwd;
-libsvmpath = [wdir(1:end-6) fullfile('lib','libsvm-3.11','matlab')];
+libsvmpath = [ wdir(1:end-6) fullfile('lib','libsvm-3.11','matlab')];
 % add library folder to search path
 addpath(libsvmpath)
 
@@ -91,31 +91,28 @@ nfeat_codebook = 60000; % number of descriptors used by k-means for the codebook
 norm_bof_hist = 1;
 
 % number of images selected for training (e.g. 30 for Caltech-101)
-num_train_img = 49;
+num_train_img = 30;
 % number of images selected for test (e.g. 50 for Caltech-101)
-num_test_img = 1;
+num_test_img = 20;
 
 % image file extension
 file_ext='jpg';
 
 % Create a new dataset split
 file_split = 'split.mat';
-
 if do_split_sets    
     data = create_dataset_split_structure(fullfile(basepath, 'img', dataset_dir), num_train_img, num_test_img, file_ext);
     save(fullfile(basepath,'img',dataset_dir,file_split),'data');
 else
     load(fullfile(basepath,'img',dataset_dir,file_split));
 end
-
 classes = {data.classname}; % create cell array of class name strings
 
 sift_mods = size(desc_name,2);
 for s_iter = 1:sift_mods
     
     % number of codewords (i.e. K for the k-means algorithm)
-    nwords_codebook = 600;
-
+    nwords_codebook = 250;
     % Extract SIFT features fon training and test images
     if do_feat_extraction
         extract_sift_features(fullfile('..','img',dataset_dir),desc_name(s_iter));
@@ -142,7 +139,7 @@ for s_iter = 1:sift_mods
             else
                 [VC] = visual_vocab_builder(data, desc_train, num_train_img, nfeat_codebook, nwords_codebook, max_km_iters);            
                 save(fileName,'VC');
-            end
+            end      
         end
         
 
@@ -279,13 +276,12 @@ for s_iter = 1:sift_mods
                               visualize_res & have_screen);
             svm_chi2_acc(iter) = acc;
         end
-        
         nwords(iter) = nwords_codebook;
         nwords_codebook = nwords_codebook + incr; %incremento del nr.parole
      end
 
     % Plot bar
-    figure(s_iter+50);
+    figure(s_iter);
     for i = 1:steps
         iterData = [chi2_NN_acc(i), svm_chi2_acc(i)];
         ax1 = subplot(1,steps,i);
@@ -299,24 +295,22 @@ for s_iter = 1:sift_mods
         title(titleIterBar)
     end
     
-% subplot(2,steps,i+1);
+%     subplot(2,1,1);
 %     ax1Pos = get(ax1, 'Position');
-    
+
     T.Iterazioni = nwords';
     T.NNCHI2 = chi2_NN_acc;
     T.SVMCHI2 = svm_chi2_acc;
     timeTable = struct2table(T);
-    fg = figure(s_iter+20);
-    set (fg, 'Name', sprintf('Method: %s', desc_name(s_iter)));
+    figure(s_iter+2);
     
-    % Get the table in string form
+    % Get the table in string form.
 TString = evalc('disp(timeTable)');
 % Use TeX Markup for bold formatting and underscores.
 TString = strrep(TString,'<strong>','\bf');
 TString = strrep(TString,'</strong>','\rm');
 TString = strrep(TString,'_','\_');
-
-% Get a fixed-width font
+% Get a fixed-width font.
 FixedWidth = get(0,'FixedWidthFontName');
 % Output the table using the annotation command.
 annotation(gcf,'Textbox','String',TString,'Interpreter','Tex',...
