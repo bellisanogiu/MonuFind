@@ -17,7 +17,7 @@ for i = 1:length(data)
         fprintf('Loading %s \n',fname);
         tmp = load(fname,'-mat');
         tmp.desc.class=i;
-        tmp.desc.imgfname=regexprep(fname,['.' desc_name],'.jpg');
+        tmp.desc.imgfname=regexprep(fname,['.' desc_name],'.jpg'); % this replace deserve a correction!
         desc_train(lasti)=tmp.desc;
         desc_train(lasti).sift = single(desc_train(lasti).sift);
         lasti=lasti+1;

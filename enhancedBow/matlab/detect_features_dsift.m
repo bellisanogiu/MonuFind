@@ -17,29 +17,29 @@
 %
 %
 
-function detect_features_dsift(im_dir,file_ext,varargin)
+function detect_features_dsift(im_dir,file_ext,do_spatial_info,varargin)
     
     stride = 6;
     do_resizeimage = 1;
     
     dd = dir(fullfile(im_dir,'*.jpg'));
-    if nargin < 3
+    if nargin < 4
         scales = [32];
     else
         scales = cell2mat(varargin(1));
     end
 
-    parfor i = 1:length(dd)
-    %for i = 1:length(dd)
+%     parfor i = 1:length(dd)
+    for i = 1:length(dd)
     
         fname = fullfile(im_dir,dd(i).name);
         I=imread(fname);
-        fname_out = [fname(1:end-3),file_ext];
-        
+%         fname_out = [fname(1:end-3),file_ext];
+        fname_out = strcat(fname(1:end-3),file_ext);
         if exist(fname_out,'file')
             fprintf('File exists! Skipping %s \n',fname_out);
             continue;
-        end;
+        end
 
         %resize the max dimension down to 300
         if do_resizeimage
@@ -48,28 +48,38 @@ function detect_features_dsift(im_dir,file_ext,varargin)
             tmp_img = [tmp_img(1:end-4),'_tmp.jpg'];
             %tmp_img = [tmp_img(1:end-4),'.jpg'];
             %imwrite(I, tmp_img, 'jpg', 'quality', 90);
-        end;
+        end
         
         fprintf('Detecting and describing features: %s \n',fname_out);
 
         fname_txt = [fname(1:end-3) 'txt' ];
-       
-        % scale
-        %scales = [16 24 32 48];        
-        sift_cell = cell(1,length(scales));
-        for psize=1:length(scales);
-            [sift_tmp,gx{psize},gy{psize}]=sp_dense_sift(I,stride,scales(psize));
-            sift_cell{psize}=reshape(sift_tmp,[size(sift_tmp,1)*size(sift_tmp,2) size(sift_tmp,3)]);
-            rad{psize} = scales(psize)*ones(1,size(sift_cell{psize},1))';
-        end
-        sift = cell2mat(sift_cell');
-
-        rad = cell2mat(rad');
-        [gx] = cellfun(@(C)(C(:)),gx,'UniformOutput',false); %make each grid  of coordinates in the cell a vector
-        c = cell2mat(gx'); % generate vector of coordinates
         
-        [gy] = cellfun(@(C)(C(:)),gy,'UniformOutput',false); %make each grid of coordinates in the cell a vector
-        r = cell2mat(gy');  % generate vector of coordinates
+        [sift, rad, c, r] = perform_dsift_extraction(scales, stride, I);
+        
+        if do_spatial_info
+            
+            fprintf('Computing spatial information...\n');
+            
+            [rows, columns, nColCnl] = size(I);
+            width = columns/2;
+            height = rows/2;
+
+            I1 = imcrop(I, [0 0 width height]);
+            I2 = imcrop(I, [width+1 0 width-1 height]);
+            I3 = imcrop(I, [0 height+1 width height-1]);
+            I4 = imcrop(I, [width+1 height+1 width-1 height-1]);
+            
+            [sift1, rad1, c1, r1] = perform_dsift_extraction(scales, stride, I1);
+            [sift2, rad2, c2, r2] = perform_dsift_extraction(scales, stride, I2);
+            [sift3, rad3, c3, r3] = perform_dsift_extraction(scales, stride, I3);
+            [sift4, rad4, c4, r4] = perform_dsift_extraction(scales, stride, I4);
+            
+            sift = [sift;sift1;sift2;sift3;sift4];
+            rad = [rad;rad1;rad2;rad3;rad4];
+            c = [c;c1;c2;c3;c4];
+            r = [r;r1;r2;r3;r4];
+            
+        end
         
         desc = struct('sift',uint8(512*sift),'r',r,'c',c,'rad',rad);
 
