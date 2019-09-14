@@ -35,7 +35,11 @@ function detect_features_dsift(im_dir,file_ext,do_spatial_info,varargin)
         fname = fullfile(im_dir,dd(i).name);
         I=imread(fname);
 %         fname_out = [fname(1:end-3),file_ext];
-        fname_out = strcat(fname(1:end-3),file_ext);
+        if do_spatial_info
+            fname_out = strcat(fname(1:end-4),'_spinf.',file_ext);
+        else
+            fname_out = strcat(fname(1:end-3),file_ext);
+        end
         if exist(fname_out,'file')
             fprintf('File exists! Skipping %s \n',fname_out);
             continue;

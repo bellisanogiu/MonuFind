@@ -1,4 +1,4 @@
-function [desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name, dataset_dir, basepath, desc_train, desc_test)
+function [desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name, dataset_dir, basepath, do_spatial_info, desc_train, desc_test)
 % Load pre-computed SIFT features for training images
 
 % The resulting structure array 'desc' will contain one
@@ -11,7 +11,7 @@ function [desc_train, desc_test] = load_precomputed_features(data, file_ext, des
 
 lasti=1;
 for i = 1:length(data)
-     images_descs = get_descriptors_files(data,i,file_ext,desc_name,'train');
+     images_descs = get_descriptors_files(data,i,file_ext,desc_name,do_spatial_info,'train');
      for j = 1:length(images_descs) 
         fname = fullfile(basepath,'img',dataset_dir,data(i).classname,images_descs{j});
         fprintf('Loading %s \n',fname);
@@ -27,7 +27,7 @@ end
 % Load pre-computed SIFT features for test images 
 lasti=1;
 for i = 1:length(data)
-     images_descs = get_descriptors_files(data,i,file_ext,desc_name,'test');
+     images_descs = get_descriptors_files(data,i,file_ext,desc_name,do_spatial_info,'test');
      for j = 1:length(images_descs) 
         fname = fullfile(basepath,'img',dataset_dir,data(i).classname,images_descs{j});
         fprintf('Loading %s \n',fname);

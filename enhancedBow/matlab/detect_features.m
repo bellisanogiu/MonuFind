@@ -40,7 +40,12 @@ function [] = detect_features(im_dir,file_ext,do_spatial_info,show_img)
         fname = fullfile(im_dir,dd(i).name);
 
 %         fname_out = [fname(1:end-3),file_ext];
-        fname_out = strcat(fname(1:end-3),file_ext);
+        if do_spatial_info
+            fname_out = strcat(fname(1:end-4),'_spinf.',file_ext);
+        else
+            fname_out = strcat(fname(1:end-3),file_ext);
+        end
+        
         if exist(fname_out,'file')
             fprintf('File exists! Skipping %s \n',fname_out);
             continue;
