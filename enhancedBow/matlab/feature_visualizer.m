@@ -1,7 +1,6 @@
 % Visualize SIFT features for training images
-function feature_visualizer(desc_train)
-    nti=10;
-    fprintf('\nVisualize features for %d training images\n', nti);
+function feature_visualizer(desc_train, nti)
+    fprintf('\nVisualize features for %d images\n', nti);
     imgind=randperm(length(desc_train));
     for i=1:nti
         d=desc_train(imgind(i));

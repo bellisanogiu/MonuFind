@@ -34,8 +34,8 @@ function [] = detect_features(im_dir,file_ext,do_spatial_info,show_img)
     % descriptor parameters
     enlarge_factor = 2; % enlarge the size of the features to make them more distinctive
 
-%     parfor i = 1:length(dd)
-    for i = 1:length(dd)
+    parfor i = 1:length(dd)
+%     for i = 1:length(dd)
         %fname = [im_dir,'/',dd(i).name];
         fname = fullfile(im_dir,dd(i).name);
 
@@ -43,7 +43,7 @@ function [] = detect_features(im_dir,file_ext,do_spatial_info,show_img)
         fname_out = strcat(fname(1:end-3),file_ext);
         if exist(fname_out,'file')
             fprintf('File exists! Skipping %s \n',fname_out);
-%             continue;
+            continue;
         end
 
         fprintf('Detecting and describing features: %s \n',fname_out);

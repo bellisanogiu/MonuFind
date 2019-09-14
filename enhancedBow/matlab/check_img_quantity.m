@@ -14,7 +14,7 @@ function result = check_img_quantity(num_tot_img, main_dir, file_ext)
             if length(imgdir) < num_tot_img
                   fprintf('The directory %s does not contain %d images, try to choose another split values', category_dirs(c).name, num_tot_img);
                   result = false;
-            end                          
+            end
         end
     end
 

@@ -29,8 +29,8 @@ function detect_features_dsift(im_dir,file_ext,do_spatial_info,varargin)
         scales = cell2mat(varargin(1));
     end
 
-%     parfor i = 1:length(dd)
-    for i = 1:length(dd)
+    parfor i = 1:length(dd)
+%     for i = 1:length(dd)
     
         fname = fullfile(im_dir,dd(i).name);
         I=imread(fname);

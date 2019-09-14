@@ -41,16 +41,16 @@ retrieval_dir = 'imageSamples';
 %desc_name = 'dsift';
 %desc_name = 'msdsift';
 
-desc_name = ["dsift"];
+desc_name = ["sift", "dsift"];
 
 % FLAGS
 % Initial settings
-do_feat_extraction = 1;
-do_split_sets = 1;
+do_feat_extraction = 0;
+do_split_sets = 0;
 
-do_form_codebook = 1;
+do_form_codebook = 0;
 do_feat_quantization = 1;
-do_cross_validation = 1;
+do_cross_validation = 0;
 do_spatial_info = 1;
 
 % Classifier selection
@@ -63,7 +63,7 @@ do_svm_inter_classification = 0;
 do_svm_chi2_classification = 1;
 
 % Initialization of variables
-steps = 1; % nr.passi di cui si incrementa il codeword
+steps = 2; % nr.passi di cui si incrementa il codeword
 incr = 250; % incremento desiderato per il codeword
 %nwords = zeros(steps,1);
 list_method = {};
@@ -109,6 +109,7 @@ split_valid = check_img_quantity(num_tot_img, fullfile(basepath, 'img', dataset_
 
 if split_valid
     
+    sift_mods = size(desc_name,2); 
     % Create a new dataset split
     file_split = 'split.mat';
     if do_cross_validation
@@ -141,7 +142,7 @@ if split_valid
 
         classes = {data.classname}; % create cell array of class name strings
 
-        sift_mods = size(desc_name,2);     
+            
 
         for s_iter = 1:sift_mods
 
@@ -158,7 +159,8 @@ if split_valid
             [desc_train, desc_test] = load_precomputed_features(data, file_ext, desc_name(s_iter), dataset_dir, basepath);
 
             if (visualize_feat && have_screen)
-                feature_visualizer(desc_train);
+                num_images = 10;
+                feature_visualizer(desc_train, num_images);
             end
 
             for iter = 1:steps % calculate steps
@@ -318,58 +320,116 @@ if split_valid
 
                 nwords(iter) = nwords_codebook;
                 nwords_codebook = nwords_codebook + incr; %incremento del nr.parole
-             end
-
-            % Plot bar
-            figure(s_iter+50);
-            for i = 1:steps
-                iterData = [chi2_NN_acc(i), svm_chi2_acc(i)];
-                ax1 = subplot(1,steps,i);
-                c = categorical({'NN-CHI2' 'SVM-CHI2'});
-                b = bar(ax1,c,iterData);
-                b.FaceColor = 'flat';
-                b.CData(1,:) = [1,0,0];
-                b.CData(2,:) = [0,1,0];
-                ylim([0 1])
-                titleIterBar = sprintf('%s - Accuracy, DIM = %d', desc_name(s_iter), nwords(i));
-                title(titleIterBar)
             end
+               
+            % ---Plot bar---
+%             figure(s_iter+50);
+%             for i = 1:steps
+%                 iterData = [chi2_NN_acc(i), svm_chi2_acc(i)];
+%                 ax1 = subplot(1,steps,i);
+%                 c = categorical({'NN-CHI2' 'SVM-CHI2'});
+%                 b = bar(ax1,c,iterData);
+%                 b.FaceColor = 'flat';
+%                 b.CData(1,:) = [1,0,0];
+%                 b.CData(2,:) = [0,1,0];
+%                 ylim([0 1])
+%                 titleIterBar = sprintf('%s - Accuracy, DIM = %d', desc_name(s_iter), nwords(i));
+%                 title(titleIterBar)
+%             end
 
-        % subplot(2,steps,i+1);
-        %     ax1Pos = get(ax1, 'Position');
+            % subplot(2,steps,i+1);
+            % ax1Pos = get(ax1, 'Position');
 
             T.Iterazioni = nwords';
             T.NNCHI2 = chi2_NN_acc;
             T.SVMCHI2 = svm_chi2_acc;
-            timeTable = struct2table(T);
-            fg = figure(s_iter+20);
-            set (fg, 'Name', sprintf('Method: %s', desc_name(s_iter)));
-
-            % Get the table in string form
-        TString = evalc('disp(timeTable)');
-        % Use TeX Markup for bold formatting and underscores.
-        TString = strrep(TString,'<strong>','\bf');
-        TString = strrep(TString,'</strong>','\rm');
-        TString = strrep(TString,'_','\_');
-
-        % Get a fixed-width font
-        FixedWidth = get(0,'FixedWidthFontName');
-        % Output the table using the annotation command.
-        annotation(gcf,'Textbox','String',TString,'Interpreter','Tex',...
-            'FontName',FixedWidth,'Units','Normalized','Position',[0 0 1 1]);
+            
+            if (desc_name(s_iter)=="sift")
+                siftResultsTable = struct2table(T);
+                sift_chi2_NN = chi2_NN_acc;
+                sift_svm_chi2 = svm_chi2_acc;
+            end
+            if (desc_name(s_iter)=="dsift")
+                dsiftResultsTable = struct2table(T);
+                dsift_chi2_NN = chi2_NN_acc;
+                dsift_svm_chi2 = svm_chi2_acc;
+            end
+            if (desc_name(s_iter)=="msdsift")
+                msdsiftResultsTable = struct2table(T);
+                msdsift_chi2_NN = chi2_NN_acc;
+                msdsift_svm_chi2 = svm_chi2_acc;
+            end
+            
+%             ---Print tables---
+%             fg = figure(s_iter+20);
+%             set (fg, 'Name', sprintf('Method: %s', desc_name(s_iter)));
+%             
+%             % Get the table in string form
+%         TString = evalc('disp(timeTable)');
+%         % Use TeX Markup for bold formatting and underscores.
+%         TString = strrep(TString,'<strong>','\bf');
+%         TString = strrep(TString,'</strong>','\rm');
+%         TString = strrep(TString,'_','\_');
+% 
+%         % Get a fixed-width font
+%         FixedWidth = get(0,'FixedWidthFontName');
+%         % Output the table using the annotation command.
+%         annotation(gcf,'Textbox','String',TString,'Interpreter','Tex',...
+%             'FontName',FixedWidth,'Units','Normalized','Position',[0 0 1 1]);
 
         %     uitable('Data',timeTable{:,:},'ColumnName',timeTable.Properties.VariableNames, 'RowName',timeTable.Properties.RowNames,'Units', 'Normalized', 'Position', [0, 0, 1, 1]);  % NEW
         %     set(ax1, 'Visible', 'Off')
 
-
-        end        
+        end
+        
+        
     end
     
-%     Perform image retrieval
+    % ---Plot bar---
+    for s_iter = 1:sift_mods
+        
+        figure(s_iter+50);
+        for m = 1:steps 
+            if (desc_name(s_iter)=="sift")  
+                iterData = [sift_chi2_NN(m), sift_svm_chi2(m)];
+            end
+            if (desc_name(s_iter)=="dsift")
+                iterData = [dsift_chi2_NN(m), dsift_svm_chi2(m)];
+            end
+            if (desc_name(s_iter)=="msdsift")
+                iterData = [msdsift_chi2_NN(m), msdsift_svm_chi2(m)];
+            end                
+            ax1 = subplot(1,steps,m);
+            c = categorical({'NN-CHI2' 'SVM-CHI2'});
+            b = bar(ax1,c,iterData);
+            b.FaceColor = 'flat';
+            b.CData(1,:) = [1,0,0];
+            b.CData(2,:) = [0,1,0];
+            ylim([0 1])
+            titleIterBar = sprintf('%s - Accuracy, DIM = %d', desc_name(s_iter), nwords(m));
+            title(titleIterBar)
+        end            
+        % --- Result Tables ---
+        sprintf('%s result table: \n', desc_name(s_iter));
     
-
-
-
+        if (desc_name(s_iter)=="sift")  
+            siftResultsTable
+        end
+        if (desc_name(s_iter)=="dsift")
+            dsiftResultsTable
+        end
+        if (desc_name(s_iter)=="msdsift")
+            msdsiftResultsTable
+        end     
+    end
+    
+    
+    
+%    If cross validation is active perform another visualization
+     
+%     Perform image retrieval
+     retrieval_path = fullfile(basepath, 'img', retrieval_dir);
+     perform_image_retrieval(retrieval_path,file_ext,desc_name(1),do_spatial_info,VC,nwords(iter),norm_bof_hist,bof_train,labels_train);
 end
 
 
