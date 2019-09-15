@@ -3,7 +3,7 @@ function [ ] = visualize_results( classes, desc_test, labels_test, labels_result
 %VISUALIZE_EXAMPLES Illustrate correcly classified and missclassified 
 %samples of each class.
 
-figure;
+figure(1);
 
 for i=1:length(classes)
     
@@ -35,4 +35,5 @@ for i=1:length(classes)
 end
 
 end
+
 

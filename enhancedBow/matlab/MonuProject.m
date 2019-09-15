@@ -3,8 +3,8 @@
 %  Hands on Advanced Bag-of-Words Models for Visual Recognition           %
 %                                                                         %
 %  Instructors:                                                           %
-%  L. Ballan     <lamberto.ballan@unifi.it>                               %
-%  L. Seidenari  <lorenzo.seidenari@unifi.it>                             %
+%  L. Ballan                                                              %
+%  L. Seidenari                                                           %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -41,17 +41,17 @@ retrieval_dir = 'imageSamples';
 %desc_name = 'dsift';
 %desc_name = 'msdsift';
 
-desc_name = ["dsift"];
+desc_name = ["msdsift"];
 
 % FLAGS
 % Initial settings
 do_feat_extraction = 1;
-do_split_sets = 1;
+do_split_sets = 0;
 
 do_form_codebook = 0;
 do_feat_quantization = 1;
 
-do_cross_validation = 1;
+do_cross_validation = 0;
 do_spatial_info = 1;
 
 % Classifier selection
@@ -81,7 +81,7 @@ svm_chi2_acc = zeros(steps,1);
 visualize_feat = 0; % error!
 visualize_words = 0; % error!
 visualize_confmat = 0; % confusion matrix
-visualize_res = 0; % error!
+visualize_res = 0;
 have_screen = isempty(getenv('DISPLAY'));
 
 % PATHS
@@ -323,7 +323,8 @@ if split_valid
                 end
 
                 nwords(iter) = nwords_codebook;
-                nwords_codebook = nwords_codebook + incr; %incremento del nr.parole
+                % number of codewords increment
+                nwords_codebook = nwords_codebook + incr;
             end
             
             siftMode = ones(size(nwords,2),1)*s_iter;
@@ -385,8 +386,8 @@ if split_valid
     end
      
 %     Perform image retrieval
-%      retrieval_path = fullfile(basepath, 'img', retrieval_dir);
-%      perform_image_retrieval(retrieval_path,file_ext,desc_name(1),do_spatial_info,VC,nwords(iter),norm_bof_hist,bof_train,labels_train);
+     retrieval_path = fullfile(basepath, 'img', retrieval_dir);
+     perform_image_retrieval(retrieval_path,file_ext,desc_name(1),do_spatial_info,VC,nwords(iter),norm_bof_hist,bof_train,labels_train,classes,desc_train);
 end
 
 

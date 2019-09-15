@@ -17,7 +17,14 @@ for i = 1:length(data)
         fprintf('Loading %s \n',fname);
         tmp = load(fname,'-mat');
         tmp.desc.class=i;
-        tmp.desc.imgfname=regexprep(fname,['.' desc_name],'.jpg'); % this replace deserve a correction!
+%         tmp.desc.imgfname=regexprep(fname,['.' desc_name],'.jpg');
+        if do_spatial_info
+            base = strcat('_spinf.',desc_name);
+            alter = strcat('.',file_ext);            
+            tmp.desc.imgfname=strrep(fname,base,alter);
+        else
+            tmp.desc.imgfname=strrep(fname,desc_name,file_ext);
+        end
         desc_train(lasti)=tmp.desc;
         desc_train(lasti).sift = single(desc_train(lasti).sift);
         lasti=lasti+1;
@@ -33,7 +40,14 @@ for i = 1:length(data)
         fprintf('Loading %s \n',fname);
         tmp = load(fname,'-mat');
         tmp.desc.class=i;
-        tmp.desc.imgfname=regexprep(fname,['.' desc_name],'.jpg');
+%         tmp.desc.imgfname=regexprep(fname,['.' desc_name],'.jpg');
+        if do_spatial_info
+            base = strcat('_spinf.',desc_name);
+            alter = strcat('.',file_ext);            
+            tmp.desc.imgfname=strrep(fname,base,alter);
+        else
+            tmp.desc.imgfname=strrep(fname,desc_name,file_ext);
+        end
         desc_test(lasti)=tmp.desc;
         desc_test(lasti).sift = single(desc_test(lasti).sift);
         lasti=lasti+1;
